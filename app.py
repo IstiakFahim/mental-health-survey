@@ -4,8 +4,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 # --- CONFIGURATION ---
-# Try to get the number from Streamlit Secrets, default to 1 if not found
-BATCH_NUMBER = st.secrets.get("BATCH_NUMBER", 1)
+BATCH_NUMBER = 1
 
 CSV_FILE = f'survey_batch_{BATCH_NUMBER}.csv'
 SHEET_NAME = 'Survey_Results_Master'
@@ -97,4 +96,5 @@ done = len(answered_ids)
 st.sidebar.write(f"**Batch Progress: {done} / {total}**")
 
 st.sidebar.progress(done / total)
+
 
