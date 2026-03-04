@@ -12,8 +12,8 @@ TAB_NAME = f'Results_{BATCH_NUMBER}'
 # --- GOOGLE SHEETS SETUP ---
 scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 
-# Load credentials from your JSON file
-creds = Credentials.from_service_account_file('credentials.json', scopes=scope)
+# This line changes! Instead of 'credentials.json', it uses st.secrets
+creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
 client = gspread.authorize(creds)
 
 # Open the spreadsheet and the specific tab
@@ -93,4 +93,5 @@ else:
 total = len(df_questions)
 done = len(answered_ids)
 st.sidebar.write(f"**Batch Progress: {done} / {total}**")
+
 st.sidebar.progress(done / total)
