@@ -4,20 +4,22 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 # --- CONFIGURATION ---
-BATCH_NUMBER = 1
+BATCH_NUMBER = 1  # <--- CHANGE THIS TO 2, 3, 4, or 5 FOR THE OTHER APPS
 
 CSV_FILE = f'survey_batch_{BATCH_NUMBER}.csv'
-SHEET_NAME = 'Survey_Results_Master'
-TAB_NAME = f'Results_{BATCH_NUMBER}'
+SHEET_NAME = f'Survey_Results_Batch_{BATCH_NUMBER}'
+TAB_NAME = 'Result' # Matches the tab name you just created
 
 # --- GOOGLE SHEETS SETUP ---
-scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+@st.cache_resource
+def get_gspread_client():
+    scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+    creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
+    return gspread.authorize(creds)
 
-# This line changes! Instead of 'credentials.json', it uses st.secrets
-creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
-client = gspread.authorize(creds)
+client = get_gspread_client()
 
-# Open the spreadsheet and the specific tab
+# Open the specific spreadsheet for this batch
 sh = client.open(SHEET_NAME)
 worksheet = sh.worksheet(TAB_NAME)
 
@@ -28,7 +30,10 @@ df_questions = pd.read_csv(CSV_FILE)
 existing_records = worksheet.get_all_records()
 if existing_records:
     existing_df = pd.DataFrame(existing_records)
-    answered_ids = existing_df['id'].astype(str).tolist()
+    if 'id' in existing_df.columns:
+        answered_ids = existing_df['id'].astype(str).tolist()
+    else:
+        answered_ids = []
 else:
     answered_ids = []
 
@@ -39,9 +44,8 @@ st.title(f"📋 Mental Health Labeling Survey (Batch {BATCH_NUMBER})")
 
 if remaining_df.empty:
     st.balloons()
-    st.success(f"🎉 All {len(df_questions)} rows in this batch are completed! You're a hero!")
+    st.success(f"🎉 All {len(df_questions)} rows in Batch {BATCH_NUMBER} are completed!")
 else:
-    # Get the current row
     current_row = remaining_df.iloc[0]
     
     with st.container(border=True):
@@ -52,10 +56,8 @@ else:
     st.divider()
     st.write("### Select the most accurate labels:")
 
-    # User Input for Name
-    user_name = st.text_input("Enter your name:", placeholder="Who is helping today?")
+    user_name = st.text_input("Enter your name (e.g., fahim_istiak):", placeholder="Your unique ID")
 
-    # Create 3 columns for the 3 questions
     col1, col2, col3 = st.columns(3)
 
     with col1:
@@ -74,7 +76,6 @@ else:
         if not user_name:
             st.error("Please enter your name before submitting!")
         else:
-            # Prepare the row to append
             new_row = [
                 str(current_row['id']),
                 current_row['Title'],
@@ -84,17 +85,12 @@ else:
                 selected_dis,
                 user_name
             ]
-            
-            # Append to Google Sheets
             worksheet.append_row(new_row)
-            st.success("Saved! Loading next case...")
+            st.success("Saved!")
             st.rerun()
 
 # Sidebar Progress
 total = len(df_questions)
 done = len(answered_ids)
-st.sidebar.write(f"**Batch Progress: {done} / {total}**")
-
+st.sidebar.write(f"**Batch {BATCH_NUMBER} Progress: {done} / {total}**")
 st.sidebar.progress(done / total)
-
-
