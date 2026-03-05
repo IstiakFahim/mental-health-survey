@@ -1,50 +1,55 @@
 import streamlit as st
 import pandas as pd
 import gspread
+import time
 from google.oauth2.service_account import Credentials
 
 # --- CONFIGURATION ---
-BATCH_NUMBER = 1  # <--- CHANGE THIS TO 2, 3, 4, or 5 FOR THE OTHER APPS
-
+BATCH_NUMBER = 1  # <--- CHANGE THIS FOR EACH APP (2, 3, 4, 5)
 CSV_FILE = f'survey_batch_{BATCH_NUMBER}.csv'
 SHEET_NAME = f'Survey_Results_Batch_{BATCH_NUMBER}'
-TAB_NAME = 'Result' # Matches the tab name you just created
+TAB_NAME = 'Result'
 
-# --- GOOGLE SHEETS SETUP ---
+# --- GOOGLE SHEETS SETUP (With Retry Logic) ---
 @st.cache_resource
 def get_gspread_client():
     scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
     creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
     return gspread.authorize(creds)
 
-client = get_gspread_client()
+def get_worksheet():
+    client = get_gspread_client()
+    # Simple retry logic: if Google is busy, wait and try again
+    for i in range(3): 
+        try:
+            sh = client.open(SHEET_NAME)
+            return sh.worksheet(TAB_NAME)
+        except:
+            time.sleep(2)
+    return None
 
-# Open the specific spreadsheet for this batch
-sh = client.open(SHEET_NAME)
-worksheet = sh.worksheet(TAB_NAME)
-
-# --- LOAD DATA ---
-df_questions = pd.read_csv(CSV_FILE)
-
-# Get already answered IDs from Google Sheets to prevent duplicates
-existing_records = worksheet.get_all_records()
-if existing_records:
-    existing_df = pd.DataFrame(existing_records)
-    if 'id' in existing_df.columns:
-        answered_ids = existing_df['id'].astype(str).tolist()
+# --- INITIALIZE SESSION STATE ---
+# This keeps track of what's done in the app's memory to avoid hitting Google too much
+if 'answered_ids' not in st.session_state:
+    worksheet = get_worksheet()
+    if worksheet:
+        try:
+            records = worksheet.get_all_records()
+            st.session_state.answered_ids = [str(r['id']) for r in records if 'id' in r]
+        except:
+            st.session_state.answered_ids = []
     else:
-        answered_ids = []
-else:
-    answered_ids = []
+        st.session_state.answered_ids = []
 
-# Find rows that haven't been answered yet
-remaining_df = df_questions[~df_questions['id'].astype(str).isin(answered_ids)]
+# --- LOAD CSV ---
+df_questions = pd.read_csv(CSV_FILE)
+remaining_df = df_questions[~df_questions['id'].astype(str).isin(st.session_state.answered_ids)]
 
-st.title(f"📋 Mental Health Labeling Survey (Batch {BATCH_NUMBER})")
+st.title(f"📋 Mental Health Survey (Batch {BATCH_NUMBER})")
 
 if remaining_df.empty:
     st.balloons()
-    st.success(f"🎉 All {len(df_questions)} rows in Batch {BATCH_NUMBER} are completed!")
+    st.success("🎉 All rows in this batch are completed!")
 else:
     current_row = remaining_df.iloc[0]
     
@@ -54,43 +59,43 @@ else:
         st.write(f"**Body:** {current_row['Body']}")
 
     st.divider()
-    st.write("### Select the most accurate labels:")
-
-    user_name = st.text_input("Enter your name (e.g., fahim_istiak):", placeholder="Your unique ID")
+    
+    # Preserve the name input between submits
+    if 'user_name' not in st.session_state:
+        st.session_state.user_name = ""
+    
+    user_input = st.text_input("Enter your name:", value=st.session_state.user_name)
+    st.session_state.user_name = user_input
 
     col1, col2, col3 = st.columns(3)
-
     with col1:
-        cat_options = [current_row['Category'], current_row['Category_2'], current_row['Category_3']]
-        selected_cat = st.radio("Best Category?", cat_options, key="cat")
-
+        cat = st.radio("Category?", [current_row['Category'], current_row['Category_2'], current_row['Category_3']], key="cat")
     with col2:
-        sub_options = [current_row['Subcategory'], current_row['Subcategory_2'], current_row['Subcategory_3']]
-        selected_sub = st.radio("Best Subcategory?", sub_options, key="sub")
-
+        sub = st.radio("Subcategory?", [current_row['Subcategory'], current_row['Subcategory_2'], current_row['Subcategory_3']], key="sub")
     with col3:
-        dis_options = [current_row['SpecificDisorder'], current_row['SpecificDisorder_2'], current_row['SpecificDisorder_3']]
-        selected_dis = st.radio("Best Disorder?", dis_options, key="dis")
+        dis = st.radio("Disorder?", [current_row['SpecificDisorder'], current_row['SpecificDisorder_2'], current_row['SpecificDisorder_3']], key="dis")
 
     if st.button("Submit & Next ➡️", type="primary"):
-        if not user_name:
-            st.error("Please enter your name before submitting!")
+        if not user_input:
+            st.error("Please enter your name!")
         else:
-            new_row = [
-                str(current_row['id']),
-                current_row['Title'],
-                current_row['Body'],
-                selected_cat,
-                selected_sub,
-                selected_dis,
-                user_name
-            ]
-            worksheet.append_row(new_row)
-            st.success("Saved!")
-            st.rerun()
+            worksheet = get_worksheet()
+            if worksheet:
+                new_data = [str(current_row['id']), current_row['Title'], current_row['Body'], cat, sub, dis, user_input]
+                
+                # Try to write to Google
+                try:
+                    worksheet.append_row(new_data)
+                    # Update memory so we don't have to read from Google again
+                    st.session_state.answered_ids.append(str(current_row['id']))
+                    st.success("Saved!")
+                    time.sleep(0.5) # Small pause to let Google breathe
+                    st.rerun()
+                except Exception as e:
+                    st.error("Google API is rate-limiting us. Please wait 10 seconds and try again.")
 
-# Sidebar Progress
+# Sidebar
 total = len(df_questions)
-done = len(answered_ids)
-st.sidebar.write(f"**Batch {BATCH_NUMBER} Progress: {done} / {total}**")
+done = len(st.session_state.answered_ids)
+st.sidebar.write(f"**Progress: {done} / {total}**")
 st.sidebar.progress(done / total)
