@@ -19,7 +19,6 @@ def get_gspread_client():
 
 def get_worksheet():
     client = get_gspread_client()
-    # Retry connecting to the sheet
     for i in range(3): 
         try:
             sh = client.open(SHEET_NAME)
@@ -49,54 +48,54 @@ if not st.session_state.agreed:
     
     with st.expander("⚙️ Technical Rules (Click to expand)", expanded=True):
         st.markdown("""
-        1. **Unique Identity:** In the **'Enter your name:'** section, use a consistent ID (e.g., `fahim_istiak`). Use this same ID for all 600 rows.
-        2. **Input Persistence:** Your name is saved as you work. If the app **times out** or you **refresh (F5)**, you must re-enter your name.
-        3. **Auto-Save & Resume:** Progress saves instantly on "Submit." The app resumes where you left off if you close the browser.
-        4. **Ownership:** This link is for **you only**. Do not share it to avoid data conflicts.
-        5. **Submission:** Click **"Submit & Next ➡️"** to save and load the next case.
+        - **Unique Identity:** Use a consistent ID (e.g., `firstname_lastname`) throughout the 600 rows.
+        - **Persistence:** If the app times out or you refresh, you must re-enter your name.
+        - **Auto-Save:** Progress is saved instantly on 'Submit'. You can close the browser and resume later.
         """)
 
     st.markdown("### 🧠 DSM-5 Data Quality & Labeling Guide")
-    st.write("Please read the following definitions carefully. They follow the DSM-5 mental health hierarchy:")
+    st.write("Please read the definitions below. You must categorize each text using this hierarchy:")
 
-    # Descriptive Hierarchical List
+    # --- COMPLETE HIERARCHICAL LIST (All 10 Categories, 16 Subcategories, 38 Disorders) ---
     st.markdown("""
-    **1. Mood Disorders** (Conditions affecting your emotional state)
+    **1. Mood Disorders** (Emotional disturbances)
     * **Bipolar Disorders:** Extreme swings between high energy (mania) and low mood.
-        * *Includes: Bipolar 1, Bipolar 2, Cyclothymic.*
-    * **Depressive Disorders:** Intense, long-lasting feelings of sadness or loss of interest.
-        * *Includes: Major Depressive, Dysthymia, Seasonal Affective.*
+        * *Includes: Bipolar 1, Bipolar 2, Cyclothymic Disorder.*
+    * **Depressive Disorders:** Persistent sadness or loss of interest.
+        * *Includes: Major Depressive Disorder, Persistent Depressive Disorder (Dysthymia), Seasonal Affective Disorder.*
 
-    **2. Personality Disorders** (Long-term, rigid patterns of behavior and thinking)
-    * **Cluster A (Odd/Eccentric):** Characterized by social awkwardness and social withdrawal (Paranoid, Schizoid, Schizotypal).
-    * **Cluster B (Dramatic/Emotional):** Characterized by intense emotions and impulsive behavior (Antisocial, Histrionic, Narcissistic).
-    * **Cluster C (Anxious/Fearful):** Characterized by high levels of anxiety and fear (Avoidant, Dependent, Obsessive-Compulsive Personality).
+    **2. Personality Disorders** (Long-term rigid patterns)
+    * **Cluster A (Odd/Eccentric):** Paranoid, Schizoid, and Schizotypal Personality Disorders.
+    * **Cluster B (Dramatic/Emotional):** Antisocial, Histrionic, and Narcissistic Personality Disorders.
+    * **Cluster C (Anxious/Fearful):** Avoidant, Dependent, and Obsessive-Compulsive Personality Disorder.
 
-    **3. Anxiety Disorders** (Persistent, excessive fear or worry)
-    * **Panic & Phobias:** Sudden terror or fear triggered by specific objects/social situations.
-    * **Generalized Anxiety (GAD):** Constant, non-stop worry about various daily things.
+    **3. Anxiety Disorders** (Excessive fear or dread)
+    * **Phobias:** Social Anxiety Disorder, Agoraphobia.
+    * **Panic Disorders:** Panic Disorder.
+    * **Generalized Anxiety:** Generalized Anxiety Disorder (GAD).
 
-    **4. Sleep Disorders** (Problems with sleep quality, timing, and amount)
-    * **Insomnia Spectrum:** Constant difficulty falling asleep or staying asleep.
-    * **Other Issues:** Sudden sleep (Narcolepsy), breathing issues (Apnea), or leg discomfort.
+    **4. Sleep Disorders** (Sleep quality/timing issues)
+    * **Insomnia Spectrum:** Insomnia.
+    * **Other Issues:** Narcolepsy, Sleep Apnea, Restless Legs Syndrome.
 
-    **5. OCD & Related Disorders** (Repetitive thoughts and "checking" rituals)
-    * **Obsessions & Compulsions:** Unwanted rituals used to reduce anxiety (OCD, Body Dysmorphia, Hoarding).
+    **5. OCD & Related Disorders** (Rituals and unwanted thoughts)
+    * **OCD Spectrum:** Obsessive-Compulsive Disorder (OCD), Body Dysmorphic Disorder, Hoarding Disorder.
 
-    **6. Eating Disorders** (Serious disturbances in eating behavior)
-    * **Weight & Food Issues:** Extreme food restriction or lack of control over eating.
+    **6. Eating Disorders** (Disturbed eating behaviors)
+    * **Restrictive/Compensatory:** Anorexia Nervosa, Bulimia Nervosa, Binge-Eating Disorder.
 
-    **7. Neurodevelopmental Disorders** (Conditions appearing in early childhood)
-    * **ADHD & Autism:** Focus issues, hyperactivity, or challenges with social communication.
+    **7. Neurodevelopmental Disorders** (Childhood-onset)
+    * **ADHD:** Attention-Deficit/Hyperactivity Disorder.
+    * **Autism Spectrum Disorders:** Autism Spectrum Disorder (ASD).
 
-    **8. Schizophrenia Spectrum** (A break from reality)
-    * **Psychotic Disorders:** Seeing or hearing things that aren't there (hallucinations) or holding false beliefs (delusions).
+    **8. Schizophrenia Spectrum** (Loss of contact with reality)
+    * **Psychotic Disorders:** Schizophrenia, Schizoaffective Disorder, Delusional Disorder.
 
-    **9. Trauma & Stressor-Related** (Triggered by a traumatic life event)
-    * **PTSD & Adjustment:** Long-term trauma symptoms or extreme difficulty handling major life changes.
+    **9. Trauma & Stressor-Related** (Triggered by trauma/stress)
+    * **PTSD Spectrum:** Post-Traumatic Stress Disorder (PTSD), Adjustment Disorder.
 
-    **10. Substance-Related** (Problems related to drug or alcohol use)
-    * **Addictive Disorders:** Compulsive use of substances despite them causing major life problems.
+    **10. Substance-Related & Addictive Disorders**
+    * **Substance Use Disorders:** Alcohol Use Disorder, Cannabis Use Disorder.
     """)
 
     st.divider()
@@ -152,26 +151,22 @@ else:
                 st.error("Please enter your name!")
             else:
                 success = False
-                # --- RETRY LOGIC FOR GOOGLE API ---
                 with st.spinner("Saving to Google Sheets..."):
-                    for attempt in range(5): # Try 5 times
+                    # TRY 5 TIMES TO BEAT THE "API BUSY" ERROR
+                    for attempt in range(5): 
                         try:
                             worksheet = get_worksheet()
                             new_data = [str(current_row['id']), current_row['Title'], current_row['Body'], cat, sub, dis, user_input]
                             worksheet.append_row(new_data)
-                            
                             st.session_state.answered_ids.append(str(current_row['id']))
                             success = True
-                            break # Exit the retry loop if successful
-                        except Exception as e:
-                            # Wait longer each time (Exponential Backoff)
-                            wait_time = (attempt + 1) * 2 
-                            time.sleep(wait_time)
+                            break
+                        except:
+                            time.sleep((attempt + 1) * 2) 
                 
                 if success:
                     st.success("Saved!")
                     time.sleep(0.5)
                     st.rerun()
                 else:
-                    st.error("Google is very busy right now. Please wait 15 seconds and click Submit again.")
-
+                    st.error("Google is busy. Please wait 15 seconds and try again.")
