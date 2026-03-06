@@ -58,45 +58,77 @@ if not st.session_state.agreed:
 
     # --- COMPLETE HIERARCHICAL LIST (All 10 Categories, 16 Subcategories, 38 Disorders) ---
     st.markdown("""
-    **1. Mood Disorders** (Emotional disturbances)
-    * **Bipolar Disorders:** Extreme swings between high energy (mania) and low mood.
-        * *Includes: Bipolar 1, Bipolar 2, Cyclothymic Disorder.*
-    * **Depressive Disorders:** Persistent sadness or loss of interest.
-        * *Includes: Major Depressive Disorder, Persistent Depressive Disorder (Dysthymia), Seasonal Affective Disorder.*
+**1. Mood Disorders** *(Conditions affecting emotional state)*  
+* **Bipolar Disorders:** Extreme swings between high energy (mania) and low mood.  
+    * *Includes: Bipolar I Disorder, Bipolar II Disorder, Cyclothymic Disorder.*  
+* **Depressive Disorders:** Intense, long-lasting sadness or loss of interest.  
+    * *Includes: Major Depressive Disorder, Persistent Depressive Disorder (Dysthymia), Seasonal Affective Disorder.*
 
-    **2. Personality Disorders** (Long-term rigid patterns)
-    * **Cluster A (Odd/Eccentric):** Paranoid, Schizoid, and Schizotypal Personality Disorders.
-    * **Cluster B (Dramatic/Emotional):** Antisocial, Histrionic, and Narcissistic Personality Disorders.
-    * **Cluster C (Anxious/Fearful):** Avoidant, Dependent, and Obsessive-Compulsive Personality Disorder.
+---
 
-    **3. Anxiety Disorders** (Excessive fear or dread)
-    * **Phobias:** Social Anxiety Disorder, Agoraphobia.
-    * **Panic Disorders:** Panic Disorder.
-    * **Generalized Anxiety:** Generalized Anxiety Disorder (GAD).
+**2. Personality Disorders** *(Long-term rigid behavior patterns)*  
+* **Cluster A – Odd/Eccentric:** Social withdrawal and distorted thinking.  
+    * *Includes: Paranoid Personality Disorder, Schizoid Personality Disorder, Schizotypal Personality Disorder.*  
+* **Cluster B – Dramatic/Emotional:** Intense emotions and impulsive behavior.  
+    * *Includes: Antisocial Personality Disorder, Histrionic Personality Disorder, Narcissistic Personality Disorder.*  
+* **Cluster C – Anxious/Fearful:** High anxiety and perfectionistic traits.  
+    * *Includes: Avoidant Personality Disorder, Dependent Personality Disorder, Obsessive-Compulsive Personality Disorder.*
 
-    **4. Sleep Disorders** (Sleep quality/timing issues)
-    * **Insomnia Spectrum:** Insomnia.
-    * **Other Issues:** Narcolepsy, Sleep Apnea, Restless Legs Syndrome.
+---
 
-    **5. OCD & Related Disorders** (Rituals and unwanted thoughts)
-    * **OCD Spectrum:** Obsessive-Compulsive Disorder (OCD), Body Dysmorphic Disorder, Hoarding Disorder.
+**3. Anxiety Disorders** *(Persistent fear or excessive worry)*  
+* **Phobias:** Fear of specific objects or social situations.  
+    * *Includes: Social Anxiety Disorder, Agoraphobia.*  
+* **Panic Disorders:** Sudden, intense episodes of terror.  
+    * *Includes: Panic Disorder.*  
+* **Generalized Anxiety:** Chronic worry about everyday life.  
+    * *Includes: Generalized Anxiety Disorder (GAD).*
 
-    **6. Eating Disorders** (Disturbed eating behaviors)
-    * **Restrictive/Compensatory:** Anorexia Nervosa, Bulimia Nervosa, Binge-Eating Disorder.
+---
 
-    **7. Neurodevelopmental Disorders** (Childhood-onset)
-    * **ADHD:** Attention-Deficit/Hyperactivity Disorder.
-    * **Autism Spectrum Disorders:** Autism Spectrum Disorder (ASD).
+**4. Sleep Disorders** *(Problems with sleep quality or timing)*  
+* **Insomnia Spectrum:** Difficulty falling or staying asleep.  
+    * *Includes: Insomnia Disorder.*  
+* **Other Sleep Issues:** Physical or neurological sleep disruptions.  
+    * *Includes: Narcolepsy, Sleep Apnea, Restless Legs Syndrome.*
 
-    **8. Schizophrenia Spectrum** (Loss of contact with reality)
-    * **Psychotic Disorders:** Schizophrenia, Schizoaffective Disorder, Delusional Disorder.
+---
 
-    **9. Trauma & Stressor-Related** (Triggered by trauma/stress)
-    * **PTSD Spectrum:** Post-Traumatic Stress Disorder (PTSD), Adjustment Disorder.
+**5. OCD & Related Disorders** *(Repetitive thoughts and behaviors)*  
+* **OCD Spectrum:** Unwanted thoughts and repetitive rituals to reduce anxiety.  
+    * *Includes: Obsessive-Compulsive Disorder, Body Dysmorphic Disorder, Hoarding Disorder.*
 
-    **10. Substance-Related & Addictive Disorders**
-    * **Substance Use Disorders:** Alcohol Use Disorder, Cannabis Use Disorder.
-    """)
+---
+
+**6. Eating Disorders** *(Serious disturbances in eating behavior)*  
+* **Restrictive/Compensatory Eating Patterns:** Extreme restriction or binge-purge behavior.  
+    * *Includes: Anorexia Nervosa, Bulimia Nervosa, Binge-Eating Disorder.*
+
+---
+
+**7. Neurodevelopmental Disorders** *(Conditions appearing in early childhood)*  
+* **ADHD:** Problems with attention, hyperactivity, and impulsivity.  
+* **Autism Spectrum Disorders:** Difficulty with social communication and repetitive behaviors.  
+    * *Includes: Autism Spectrum Disorder (ASD).*
+
+---
+
+**8. Schizophrenia Spectrum** *(Break from reality)*  
+* **Psychotic Disorders:** Hallucinations or delusions.  
+    * *Includes: Schizophrenia, Schizoaffective Disorder, Delusional Disorder.*
+
+---
+
+**9. Trauma & Stressor-Related Disorders** *(Triggered by traumatic experiences)*  
+* **PTSD Spectrum:** Emotional distress following trauma or major life events.  
+    * *Includes: Post-Traumatic Stress Disorder (PTSD), Adjustment Disorder.*
+
+---
+
+**10. Substance-Related & Addictive Disorders**  
+* **Substance Use Disorders:** Compulsive use of substances despite harmful consequences.  
+    * *Includes: Alcohol Use Disorder, Cannabis Use Disorder.*
+""")
 
     st.divider()
     if st.button("✅ I have read the definitions and I'm ready to start", type="primary"):
@@ -170,3 +202,4 @@ else:
                     st.rerun()
                 else:
                     st.error("Google is busy. Please wait 15 seconds and try again.")
+
