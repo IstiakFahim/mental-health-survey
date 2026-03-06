@@ -19,6 +19,7 @@ def get_gspread_client():
 
 def get_worksheet():
     client = get_gspread_client()
+    # Retry connecting to the sheet
     for i in range(3): 
         try:
             sh = client.open(SHEET_NAME)
@@ -51,52 +52,49 @@ if not st.session_state.agreed:
         - **Unique Identity:** Use a consistent ID (e.g., `firstname_lastname`) throughout the 600 rows.
         - **Persistence:** If you refresh or the app times out, you must re-enter your name.
         - **Auto-Save:** Progress is saved instantly. You can close the browser and resume later.
-        - **Ownership:** This link is yours alone. Do not share it.
         """)
 
     st.markdown("### 🧠 DSM-5 Data Quality & Labeling Guide")
-    st.write("Please read the following definitions to ensure accurate labeling according to the DSM-5 hierarchy:")
+    st.write("Please read the following definitions carefully. They follow the DSM-5 mental health hierarchy:")
 
-    # High-quality descriptive list
+    # Descriptive Hierarchical List
     st.markdown("""
-    **1. Mood Disorders** (Disturbances in emotional state)
-    * **Bipolar Disorders:** Fluctuations between extreme highs (mania) and lows (depression).
+    **1. Mood Disorders** (Conditions affecting your emotional state)
+    * **Bipolar Disorders:** Extreme swings between high energy (mania) and low mood.
         * *Includes: Bipolar 1, Bipolar 2, Cyclothymic.*
-    * **Depressive Disorders:** Persistent feelings of sadness, emptiness, or loss of interest.
+    * **Depressive Disorders:** Intense, long-lasting feelings of sadness or loss of interest.
         * *Includes: Major Depressive, Dysthymia, Seasonal Affective.*
 
-    **2. Personality Disorders** (Long-term, rigid patterns of thinking and behaving)
-    * **Cluster A:** Odd or eccentric behaviors (Paranoid, Schizoid, Schizotypal).
-    * **Cluster B:** Dramatic, emotional, or erratic behaviors (Antisocial, Histrionic, Narcissistic).
-    * **Cluster C:** Anxious or fearful behaviors (Avoidant, Dependent, Obsessive-Compulsive Personality).
+    **2. Personality Disorders** (Long-term, rigid patterns of behavior and thinking)
+    * **Cluster A (Odd/Eccentric):** Characterized by social awkwardness and social withdrawal (Paranoid, Schizoid, Schizotypal).
+    * **Cluster B (Dramatic/Emotional):** Characterized by intense emotions and impulsive behavior (Antisocial, Histrionic, Narcissistic).
+    * **Cluster C (Anxious/Fearful):** Characterized by high levels of anxiety and fear (Avoidant, Dependent, Obsessive-Compulsive Personality).
 
-    **3. Anxiety Disorders** (Excessive fear, worry, or dread)
-    * **Panic & Phobias:** Intense episodes of fear or specific triggers (Panic Disorder, Agoraphobia, Social Anxiety).
-    * **Generalized Anxiety (GAD):** Persistent, non-stop worry about various daily activities.
+    **3. Anxiety Disorders** (Persistent, excessive fear or worry)
+    * **Panic & Phobias:** Sudden terror or fear triggered by specific objects/social situations.
+    * **Generalized Anxiety (GAD):** Constant, non-stop worry about various daily things.
 
-    **4. Sleep Disorders** (Issues with the quality, timing, or amount of sleep)
-    * **Insomnia Spectrum:** Constant difficulty falling or staying asleep.
-    * **Other Conditions:** Narcolepsy (sudden sleep), Sleep Apnea (breathing issues), Restless Legs.
+    **4. Sleep Disorders** (Problems with sleep quality, timing, and amount)
+    * **Insomnia Spectrum:** Constant difficulty falling asleep or staying asleep.
+    * **Other Issues:** Sudden sleep (Narcolepsy), breathing issues (Apnea), or leg discomfort.
 
-    **5. OCD & Related Disorders** (Repetitive thoughts and "checking" behaviors)
-    * **Obsessions & Compulsions:** Unwanted rituals to reduce anxiety (OCD, Body Dysmorphia, Hoarding).
+    **5. OCD & Related Disorders** (Repetitive thoughts and "checking" rituals)
+    * **Obsessions & Compulsions:** Unwanted rituals used to reduce anxiety (OCD, Body Dysmorphia, Hoarding).
 
-    **6. Eating Disorders** (Abnormal or disturbed eating habits)
-    * **Weight & Food Issues:** Extreme restriction of food or loss of control over eating (Anorexia, Bulimia, Binge-Eating).
+    **6. Eating Disorders** (Serious disturbances in eating behavior)
+    * **Weight & Food Issues:** Extreme food restriction or lack of control over eating.
 
-    **7. Neurodevelopmental Disorders** (Conditions that begin in childhood)
-    * **ADHD:** Problems with focus, sitting still, or acting without thinking.
-    * **Autism (ASD):** Challenges with social communication and repetitive behaviors.
+    **7. Neurodevelopmental Disorders** (Conditions appearing in early childhood)
+    * **ADHD & Autism:** Focus issues, hyperactivity, or challenges with social communication.
 
-    **8. Schizophrenia Spectrum** (Loss of contact with reality)
-    * **Psychotic Disorders:** Experiencing hallucinations (seeing/hearing things) or delusions (false beliefs).
-        * *Includes: Schizophrenia, Schizoaffective, Delusional Disorder.*
+    **8. Schizophrenia Spectrum** (A break from reality)
+    * **Psychotic Disorders:** Seeing or hearing things that aren't there (hallucinations) or holding false beliefs (delusions).
 
-    **9. Trauma & Stressor-Related** (Results from a stressful or traumatic life event)
-    * **PTSD & Adjustment:** Long-term trauma symptoms or difficulty coping with major life changes.
+    **9. Trauma & Stressor-Related** (Triggered by a traumatic life event)
+    * **PTSD & Adjustment:** Long-term trauma symptoms or extreme difficulty handling major life changes.
 
-    **10. Substance-Related** (Problems related to the use of drugs or alcohol)
-    * **Addictive Disorders:** Compulsive use of substances despite negative consequences (Alcohol, Cannabis).
+    **10. Substance-Related** (Problems related to drug or alcohol use)
+    * **Addictive Disorders:** Compulsive use of substances despite them causing major life problems.
     """)
 
     st.divider()
@@ -111,12 +109,12 @@ else:
 
     st.title(f"📋 Mental Health Survey (Batch {BATCH_NUMBER})")
 
-    # Sidebar
+    # Sidebar Progress
     total = len(df_questions)
     done = len(st.session_state.answered_ids)
     st.sidebar.write(f"**Progress: {done} / {total}**")
     st.sidebar.progress(done / total)
-    if st.sidebar.button("📖 Read Instructions Again"):
+    if st.sidebar.button("📖 Review Instructions"):
         st.session_state.agreed = False
         st.rerun()
 
@@ -151,14 +149,26 @@ else:
             if not user_input:
                 st.error("Please enter your name!")
             else:
-                worksheet = get_worksheet()
-                if worksheet:
-                    new_data = [str(current_row['id']), current_row['Title'], current_row['Body'], cat, sub, dis, user_input]
-                    try:
-                        worksheet.append_row(new_data)
-                        st.session_state.answered_ids.append(str(current_row['id']))
-                        st.success("Saved!")
-                        time.sleep(0.5)
-                        st.rerun()
-                    except:
-                        st.error("Google API is busy. Wait 10s and try again.")
+                success = False
+                # --- RETRY LOGIC FOR GOOGLE API ---
+                with st.spinner("Saving to Google Sheets..."):
+                    for attempt in range(5): # Try 5 times
+                        try:
+                            worksheet = get_worksheet()
+                            new_data = [str(current_row['id']), current_row['Title'], current_row['Body'], cat, sub, dis, user_input]
+                            worksheet.append_row(new_data)
+                            
+                            st.session_state.answered_ids.append(str(current_row['id']))
+                            success = True
+                            break # Exit the retry loop if successful
+                        except Exception as e:
+                            # Wait longer each time (Exponential Backoff)
+                            wait_time = (attempt + 1) * 2 
+                            time.sleep(wait_time)
+                
+                if success:
+                    st.success("Saved!")
+                    time.sleep(0.5)
+                    st.rerun()
+                else:
+                    st.error("Google is very busy right now. Please wait 15 seconds and click Submit again.")
