@@ -46,33 +46,61 @@ if 'answered_ids' not in st.session_state:
 if not st.session_state.agreed:
     st.title("📋 Annotation Instructions & Guidelines")
     
-    st.info("### ⚙️ Technical Instructions")
+    with st.expander("⚙️ Technical Rules (Click to expand)", expanded=True):
+        st.markdown("""
+        - **Unique Identity:** Use a consistent ID (e.g., `firstname_lastname`) throughout the 600 rows.
+        - **Persistence:** If you refresh or the app times out, you must re-enter your name.
+        - **Auto-Save:** Progress is saved instantly. You can close the browser and resume later.
+        - **Ownership:** This link is yours alone. Do not share it.
+        """)
+
+    st.markdown("### 🧠 DSM-5 Data Quality & Labeling Guide")
+    st.write("Please read the following definitions to ensure accurate labeling according to the DSM-5 hierarchy:")
+
+    # High-quality descriptive list
     st.markdown("""
-    1. **Unique Identity:** In the **'Enter your name:'** section, use a consistent ID (e.g., `fahim_istiak`). Use this same ID for all 600 rows.
-    2. **Input Persistence:** Your name is saved as you work. If the app **times out** or you **refresh (F5)**, you must re-enter your name.
-    3. **Auto-Save & Resume:** Progress saves instantly on "Submit." The app resumes where you left off if you close the browser.
-    4. **Ownership:** This link is for **you only**. Do not share it to avoid data conflicts.
-    5. **Submission:** Click **"Submit & Next ➡️"** to save and load the next case.
+    **1. Mood Disorders** (Disturbances in emotional state)
+    * **Bipolar Disorders:** Fluctuations between extreme highs (mania) and lows (depression).
+        * *Includes: Bipolar 1, Bipolar 2, Cyclothymic.*
+    * **Depressive Disorders:** Persistent feelings of sadness, emptiness, or loss of interest.
+        * *Includes: Major Depressive, Dysthymia, Seasonal Affective.*
+
+    **2. Personality Disorders** (Long-term, rigid patterns of thinking and behaving)
+    * **Cluster A:** Odd or eccentric behaviors (Paranoid, Schizoid, Schizotypal).
+    * **Cluster B:** Dramatic, emotional, or erratic behaviors (Antisocial, Histrionic, Narcissistic).
+    * **Cluster C:** Anxious or fearful behaviors (Avoidant, Dependent, Obsessive-Compulsive Personality).
+
+    **3. Anxiety Disorders** (Excessive fear, worry, or dread)
+    * **Panic & Phobias:** Intense episodes of fear or specific triggers (Panic Disorder, Agoraphobia, Social Anxiety).
+    * **Generalized Anxiety (GAD):** Persistent, non-stop worry about various daily activities.
+
+    **4. Sleep Disorders** (Issues with the quality, timing, or amount of sleep)
+    * **Insomnia Spectrum:** Constant difficulty falling or staying asleep.
+    * **Other Conditions:** Narcolepsy (sudden sleep), Sleep Apnea (breathing issues), Restless Legs.
+
+    **5. OCD & Related Disorders** (Repetitive thoughts and "checking" behaviors)
+    * **Obsessions & Compulsions:** Unwanted rituals to reduce anxiety (OCD, Body Dysmorphia, Hoarding).
+
+    **6. Eating Disorders** (Abnormal or disturbed eating habits)
+    * **Weight & Food Issues:** Extreme restriction of food or loss of control over eating (Anorexia, Bulimia, Binge-Eating).
+
+    **7. Neurodevelopmental Disorders** (Conditions that begin in childhood)
+    * **ADHD:** Problems with focus, sitting still, or acting without thinking.
+    * **Autism (ASD):** Challenges with social communication and repetitive behaviors.
+
+    **8. Schizophrenia Spectrum** (Loss of contact with reality)
+    * **Psychotic Disorders:** Experiencing hallucinations (seeing/hearing things) or delusions (false beliefs).
+        * *Includes: Schizophrenia, Schizoaffective, Delusional Disorder.*
+
+    **9. Trauma & Stressor-Related** (Results from a stressful or traumatic life event)
+    * **PTSD & Adjustment:** Long-term trauma symptoms or difficulty coping with major life changes.
+
+    **10. Substance-Related** (Problems related to the use of drugs or alcohol)
+    * **Addictive Disorders:** Compulsive use of substances despite negative consequences (Alcohol, Cannabis).
     """)
 
-    st.warning("### 🧠 DSM-5 Data Quality & Labeling Guide")
-    st.markdown("""
-    Please read each text carefully. You must select the Category, Subcategory, and Specific Disorder that best fits the primary issue described. **According to the DSM-5 manual, the mental health conditions follow this hierarchy:**
-
-    * **1. Mood Disorders:** Bipolar (1, 2, Cyclothymic) and Depressive (Major, Dysthymia, Seasonal).
-    * **2. Personality Disorders:** Cluster A (Odd), Cluster B (Dramatic), Cluster C (Anxious/Perfectionism).
-    * **3. Anxiety Disorders:** Panic, Phobias, and Generalized Anxiety (GAD).
-    * **4. Sleep Disorders:** Insomnia, Narcolepsy, Apnea, Restless Legs.
-    * **5. OCD & Related:** OCD (Rituals), Body Dysmorphia, Hoarding.
-    * **6. Eating Disorders:** Anorexia, Bulimia, Binge-Eating.
-    * **7. Neurodevelopmental:** ADHD and Autism (ASD).
-    * **8. Schizophrenia & Psychotic:** Schizophrenia, Schizoaffective, Delusional Disorder.
-    * **9. Trauma & Stressor:** PTSD and Adjustment Disorder.
-    * **10. Substance-Related:** Alcohol and Cannabis Use Disorders.
-    """)
-
-    st.write("---")
-    if st.button("I have read the instructions and I agree to start", type="primary"):
+    st.divider()
+    if st.button("✅ I have read the definitions and I'm ready to start", type="primary"):
         st.session_state.agreed = True
         st.rerun()
 
@@ -88,7 +116,7 @@ else:
     done = len(st.session_state.answered_ids)
     st.sidebar.write(f"**Progress: {done} / {total}**")
     st.sidebar.progress(done / total)
-    if st.sidebar.button("Show Instructions Again"):
+    if st.sidebar.button("📖 Read Instructions Again"):
         st.session_state.agreed = False
         st.rerun()
 
@@ -113,11 +141,11 @@ else:
 
         col1, col2, col3 = st.columns(3)
         with col1:
-            cat = st.radio("Category?", [current_row['Category'], current_row['Category_2'], current_row['Category_3']], key="cat")
+            cat = st.radio("Step 1: Category?", [current_row['Category'], current_row['Category_2'], current_row['Category_3']], key="cat")
         with col2:
-            sub = st.radio("Subcategory?", [current_row['Subcategory'], current_row['Subcategory_2'], current_row['Subcategory_3']], key="sub")
+            sub = st.radio("Step 2: Subcategory?", [current_row['Subcategory'], current_row['Subcategory_2'], current_row['Subcategory_3']], key="sub")
         with col3:
-            dis = st.radio("Disorder?", [current_row['SpecificDisorder'], current_row['SpecificDisorder_2'], current_row['SpecificDisorder_3']], key="dis")
+            dis = st.radio("Step 3: Disorder?", [current_row['SpecificDisorder'], current_row['SpecificDisorder_2'], current_row['SpecificDisorder_3']], key="dis")
 
         if st.button("Submit & Next ➡️", type="primary"):
             if not user_input:
