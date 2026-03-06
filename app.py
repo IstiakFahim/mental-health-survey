@@ -48,9 +48,11 @@ if not st.session_state.agreed:
     
     with st.expander("⚙️ Technical Rules (Click to expand)", expanded=True):
         st.markdown("""
-        - **Unique Identity:** Use a consistent ID (e.g., `firstname_lastname`) throughout the 600 rows.
-        - **Persistence:** If the app times out or you refresh, you must re-enter your name.
-        - **Auto-Save:** Progress is saved instantly on 'Submit'. You can close the browser and resume later.
+        1. **Unique Identity:** In the **'Enter your name:'** section, use a consistent ID (e.g., `fahim_istiak`). Use this same ID for all 600 rows.
+        2. **Input Persistence:** Your name is saved as you work. If the app **times out** or you **refresh (F5)**, you must re-enter your name.
+        3. **Auto-Save & Resume:** Progress saves instantly on "Submit." The app resumes where you left off if you close the browser.
+        4. **Ownership:** This link is for **you only**. Do not share it to avoid data conflicts.
+        5. **Submission:** Click **"Submit & Next ➡️"** to save and load the next case.
         """)
 
     st.markdown("### 🧠 DSM-5 Data Quality & Labeling Guide")
@@ -202,4 +204,5 @@ else:
                     st.rerun()
                 else:
                     st.error("Google is busy. Please wait 15 seconds and try again.")
+
 
