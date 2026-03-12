@@ -6,7 +6,7 @@ from google.oauth2.service_account import Credentials
 
 # --- CONFIGURATION ---
 BATCH_NUMBER = 1  # <--- CHANGE THIS FOR EACH APP (2, 3, 4, 5)
-CSV_FILE = f'survey_batch_{BATCH_NUMBER}.csv'
+CSV_FILE = f'survey_batch_new_{BATCH_NUMBER}.csv'
 SHEET_NAME = f'Survey_Results_Batch_{BATCH_NUMBER}'
 TAB_NAME = 'Result'
 
@@ -146,11 +146,11 @@ else:
 
         col1, col2, col3 = st.columns(3)
         with col1:
-            cat = st.radio("Step 1: Category?", [current_row['Category'], current_row['Category_2'], current_row['Category_3']], key="cat")
+            cat = st.radio("Step 1: Category?", [current_row['Category'], current_row['Category_2'], current_row['Category_3'], current_row['Category_4'], current_row['Category_5']], key="cat")
         with col2:
-            sub = st.radio("Step 2: Subcategory?", [current_row['Subcategory'], current_row['Subcategory_2'], current_row['Subcategory_3']], key="sub")
+            sub = st.radio("Step 2: Subcategory?", [current_row['Subcategory'], current_row['Subcategory_2'], current_row['Subcategory_3'], current_row['Subcategory_4'], current_row['Subcategory_5']], key="sub")
         with col3:
-            dis = st.radio("Step 3: Disorder?", [current_row['SpecificDisorder'], current_row['SpecificDisorder_2'], current_row['SpecificDisorder_3']], key="dis")
+            dis = st.radio("Step 3: Disorder?", [current_row['SpecificDisorder'], current_row['SpecificDisorder_2'], current_row['SpecificDisorder_3'], current_row['SpecificDisorder_4'], current_row['SpecificDisorder_5']], key="dis")
 
         # --- END SHIELD ---
         st.markdown('</div>', unsafe_allow_html=True)
@@ -178,3 +178,4 @@ else:
                     st.rerun()
                 else:
                     st.error("Google is busy. Wait 15s and try again.")
+
