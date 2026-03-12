@@ -44,59 +44,99 @@ if 'answered_ids' not in st.session_state:
 
 # --- PAGE 1: INSTRUCTIONS & AGREEMENT ---
 if not st.session_state.agreed:
+    # Wrap everything in a translation shield to prevent crashes
+    st.markdown('<div class="notranslate" translate="no">', unsafe_allow_html=True)
+    
     st.title("📋 Annotation Instructions & Guidelines")
     
     with st.expander("⚙️ Technical Rules (Click to expand)", expanded=True):
         st.markdown("""
-        - **Unique Identity:** Use a consistent ID (e.g., `firstname_lastname`) throughout the 600 rows.
-        - **Persistence:** If the app times out or you refresh, you must re-enter your name.
-        - **Auto-Save:** Progress is saved instantly. You can close the browser and resume later.
+        - **Unique Identity:** In the 'Enter your name:' section, use a consistent ID (e.g., fahim_istiak). Use this same ID for all 600 rows.
+        - **Input Persistence:** Your name is saved as you work. If the app times out or you refresh (F5), you must re-enter your name.
+        - **Auto-Save & Resume:** Progress saves instantly on "Submit." The app resumes where you left off if you close the browser.
+        - **Ownership:** This link is for you only. Do not share it to avoid data conflicts.
+        - **Submission:** Click "Submit & Next ➡️" to save and load the next case.
         """)
 
     st.markdown("### 🧠 DSM-5 Data Quality & Labeling Guide")
-    st.write("Please read the following definitions. Categorize texts using this hierarchy:")
-
+    
+    st.markdown("#### **Categories:**")
     st.markdown("""
-    **1. Mood Disorders** (Emotional disturbances)
-    * **Bipolar Disorders:** Extreme swings between mania and low mood.
-        * *Includes: Bipolar 1, Bipolar 2, Cyclothymic Disorder.*
-    * **Depressive Disorders:** Persistent sadness or loss of interest.
-        * *Includes: Major Depressive, Dysthymia, Seasonal Affective.*
-
-    **2. Personality Disorders** (Long-term rigid patterns)
-    * **Cluster A (Odd):** Paranoid, Schizoid, Schizotypal.
-    * **Cluster B (Dramatic):** Antisocial, Histrionic, Narcissistic.
-    * **Cluster C (Anxious):** Avoidant, Dependent, Obsessive-Compulsive Personality.
-
-    **3. Anxiety Disorders** (Excessive fear or worry)
-    * **Phobias:** Social Anxiety, Agoraphobia.
-    * **Panic Disorders:** Panic Disorder.
-    * **Generalized Anxiety:** Generalized Anxiety Disorder (GAD).
-
-    **4. Sleep Disorders** (Quality/timing issues)
-    * **Insomnia Spectrum:** Insomnia.
-    * **Other Issues:** Narcolepsy, Sleep Apnea, Restless Legs.
-
-    **5. OCD & Related Disorders** (Rituals and unwanted thoughts)
-    * **OCD Spectrum:** OCD, Body Dysmorphia, Hoarding.
-
-    **6. Eating Disorders** (Disturbed eating behaviors)
-    * **Restrictive/Compensatory:** Anorexia, Bulimia, Binge-Eating.
-
-    **7. Neurodevelopmental Disorders** (Childhood-onset)
-    * **ADHD:** Attention-Deficit/Hyperactivity Disorder.
-    * **Autism:** Autism Spectrum Disorder (ASD).
-
-    **8. Schizophrenia Spectrum** (Loss of contact with reality)
-    * **Psychotic Disorders:** Schizophrenia, Schizoaffective, Delusional.
-
-    **9. Trauma & Stressor-Related** (Triggered by trauma/stress)
-    * **PTSD Spectrum:** Post-Traumatic Stress Disorder (PTSD), Adjustment Disorder.
-
-    **10. Substance-Related & Addictive Disorders**
-    * **Substance Use:** Alcohol Use Disorder, Cannabis Use Disorder.
+    - **Personality Disorders** (Long-term patterns of thinking and behaving that are very different from what society expects and can cause problems in relationships and daily life.)
+    - **Mood Disorders** (Conditions that mainly affect a person’s emotional state, such as feeling extremely sad or having unusual mood changes.)
+    - **Anxiety Disorders** (Disorders where a person feels excessive fear, worry, or nervousness that interferes with daily activities.)
+    - **Sleep Disorders** (Problems related to sleeping, such as difficulty falling asleep, staying asleep, or having poor sleep quality.)
+    - **Obsessive-Compulsive & Related Disorders** (Conditions involving unwanted repetitive thoughts and behaviors that a person feels driven to perform.)
+    - **Eating Disorders** (Serious conditions involving unhealthy eating habits and strong concerns about body weight or shape.)
+    - **Neurodevelopmental Disorders** (Conditions that begin in childhood and affect brain development, learning, behavior, or social skills.)
+    - **Schizophrenia Spectrum & Psychotic Disorders** (Disorders that affect how a person thinks and perceives reality, sometimes causing hallucinations or delusions.)
+    - **Trauma & Stressor-Related Disorders** (Conditions that develop after experiencing or witnessing very stressful or traumatic events.)
+    - **Substance-Related & Addictive Disorders** (Problems caused by the harmful use of substances like alcohol or drugs, or addiction to certain behaviors.)
     """)
 
+    st.markdown("#### **Sub Categories:**")
+    st.markdown("""
+    - **Bipolar Disorders** (Conditions involving extreme mood swings between high energy or mania and deep depression.)
+    - **Insomnia Spectrum** (Sleep-related conditions where a person has ongoing difficulty falling asleep, staying asleep, or getting restful sleep.)
+    - **Depressive Disorders** (Conditions characterized by long-lasting sadness, low motivation, and loss of interest in daily activities.)
+    - **Cluster A – Odd/Eccentric** (Personality patterns where people may appear unusual, suspicious, or socially distant.)
+    - **OCD Spectrum** (Conditions involving intrusive thoughts and repetitive behaviors that a person feels compelled to perform.)
+    - **Restrictive/Compensatory Disorders** (Eating-related conditions where people severely restrict food or use unhealthy methods to control weight.)
+    - **Cluster C – Anxious/Fearful** (Personality patterns marked by strong anxiety, fear of criticism, or dependence on others.)
+    - **Cluster B – Dramatic/Emotional** (Personality patterns involving intense emotions, impulsive behavior, and unstable relationships.)
+    - **Phobias** (Strong and irrational fears of specific objects, situations, or activities.)
+    - **Panic Disorders** (Conditions where a person experiences sudden and repeated panic attacks with intense fear and physical symptoms.)
+    - **Psychotic Disorders** (Serious conditions where a person may lose touch with reality, such as experiencing hallucinations or delusions.)
+    - **PTSD Spectrum** (Conditions that develop after experiencing or witnessing traumatic events and can cause distressing memories and anxiety.)
+    - **ADHD** (A condition affecting attention, impulse control, and activity levels, often starting in childhood.)
+    - **Generalized Anxiety Disorder** (A condition involving constant and excessive worry about everyday situations.)
+    - **Substance Use Disorders** (Conditions where the repeated use of drugs or alcohol leads to dependence and problems in daily life.)
+    - **Autism Spectrum Disorders** (Neurodevelopmental conditions affecting communication, social interaction, and behavior patterns.)
+    """)
+
+    st.markdown("#### **Specific Disorders:**")
+    st.markdown("""
+    - **Bipolar 1 Disorder** (A mood disorder with severe manic episodes and often periods of depression.)
+    - **Panic Disorder** (A condition where a person experiences sudden and repeated panic attacks with intense fear.)
+    - **Attention-Deficit/Hyperactivity Disorder (ADHD)** (A condition involving difficulty with attention, impulsivity, and hyperactivity.)
+    - **Schizoid Personality Disorder** (A personality pattern where a person prefers being alone and shows little interest in social relationships.)
+    - **Obsessive-Compulsive Personality Disorder** (A personality condition marked by extreme perfectionism, control, and rigid rules.)
+    - **Generalized Anxiety Disorder (GAD)** (A condition involving constant and excessive worry about everyday life.)
+    - **Post-Traumatic Stress Disorder (PTSD)** (A condition that develops after experiencing or witnessing a traumatic event.)
+    - **Insomnia** (A sleep disorder where a person has ongoing difficulty falling or staying asleep.)
+    - **Persistent Depressive Disorder (Dysthymia)** (A long-lasting form of depression with ongoing low mood.)
+    - **Schizotypal Personality Disorder** (A personality pattern involving unusual thinking, beliefs, and social discomfort.)
+    - **Social Anxiety Disorder** (A condition where a person has intense fear of social situations and being judged by others.)
+    - **Anorexia Nervosa** (An eating disorder where a person severely restricts food due to fear of gaining weight.)
+    - **Major Depressive Disorder** (A serious condition involving persistent sadness and loss of interest in activities.)
+    - **Cyclothymic Disorder** (A mood disorder with frequent mood swings between mild highs and lows.)
+    - **Agoraphobia** (A fear of places or situations where escape may feel difficult or help may not be available.)
+    - **Body Dysmorphic Disorder** (A condition where a person becomes overly focused on perceived flaws in their appearance.)
+    - **Autism Spectrum Disorder (ASD)** (A developmental condition affecting communication, behavior, and social interaction.)
+    - **Bipolar 2 Disorder** (A mood disorder with depressive episodes and milder manic episodes called hypomania.)
+    - **Binge-Eating Disorder** (An eating disorder involving frequent episodes of eating large amounts of food uncontrollably.)
+    - **Narcissistic Personality Disorder** (A personality condition involving an inflated sense of self-importance and need for admiration.)
+    - **Seasonal Affective Disorder** (A type of depression that occurs during certain seasons, usually in winter.)
+    - **Obsessive-Compulsive Disorder** (A disorder with intrusive thoughts and repetitive behaviors done to reduce anxiety.)
+    - **Sleep Apnea** (A sleep disorder where breathing repeatedly stops and starts during sleep.)
+    - **Narcolepsy** (A sleep disorder causing excessive daytime sleepiness and sudden sleep attacks.)
+    - **Antisocial Personality Disorder** (A personality pattern involving disregard for rules, laws, and the rights of others.)
+    - **Avoidant Personality Disorder** (A personality condition involving extreme fear of rejection and social avoidance.)
+    - **Hoarding Disorder** (A condition where a person has difficulty discarding possessions, leading to clutter.)
+    - **Schizoaffective Disorder** (A condition combining symptoms of schizophrenia with mood disorder symptoms.)
+    - **Alcohol Use Disorder** (A condition where a person has difficulty controlling alcohol use despite negative effects.)
+    - **Restless Legs Syndrome** (A condition causing uncomfortable sensations in the legs and an urge to move them, especially at night.)
+    - **Bulimia Nervosa** (An eating disorder involving binge eating followed by behaviors like vomiting or excessive exercise.)
+    - **Schizophrenia** (A serious mental disorder affecting thinking, perception, and behavior.)
+    - **Dependent Personality Disorder** (A personality condition where a person feels a strong need to rely on others for decisions and support.)
+    - **Histrionic Personality Disorder** (A personality pattern involving excessive attention-seeking and emotional expression.)
+    - **Paranoid Personality Disorder** (A personality condition involving strong distrust and suspicion of others.)
+    - **Cannabis Use Disorder** (A condition where frequent cannabis use leads to dependence and life problems.)
+    - **Delusional Disorder** (A condition where a person strongly believes things that are not based in reality.)
+    - **Adjustment Disorder** (A condition where a person has difficulty coping with a stressful life change or event.)
+    """)
+
+    st.markdown('</div>', unsafe_allow_html=True)
     st.divider()
     if st.button("✅ I have read the definitions and I'm ready to start", type="primary"):
         st.session_state.agreed = True
@@ -128,7 +168,6 @@ else:
         current_row = remaining_df.iloc[0]
         
         # --- THE TRANSLATION SHIELD ---
-        # Forces browser to skip translating this div, stopping "half-half" bugs and crashes
         st.markdown('<div class="notranslate" translate="no">', unsafe_allow_html=True)
         
         with st.container(border=True):
@@ -178,4 +217,3 @@ else:
                     st.rerun()
                 else:
                     st.error("Google is busy. Wait 15s and try again.")
-
