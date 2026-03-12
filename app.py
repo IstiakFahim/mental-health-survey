@@ -137,18 +137,23 @@ if not st.session_state.agreed:
         st.session_state.agreed = True
         st.rerun()
 
-# --- PAGE 2: THE SURVEY ---
+# --- PAGE 2: THE SURVEY (Fixed for Translation Bug) ---
 else:
     df_questions = pd.read_csv(CSV_FILE)
-    remaining_df = df_questions[~df_questions['id'].astype(str).isin(st.session_state.answered_ids)]
+    # Ensure IDs are strings and drop any empty rows
+    df_questions['id'] = df_questions['id'].astype(str)
+    df_questions = df_questions.dropna(subset=['id'])
+    
+    remaining_df = df_questions[~df_questions['id'].isin(st.session_state.answered_ids)]
 
     st.title(f"📋 Mental Health Survey (Batch {BATCH_NUMBER})")
 
-    # Sidebar Progress
-    total = len(df_questions)
+    # Sidebar
+    total_fixed = 600 # Force it to show 600
     done = len(st.session_state.answered_ids)
-    st.sidebar.write(f"**Progress: {done} / {total}**")
-    st.sidebar.progress(done / total)
+    st.sidebar.write(f"**Progress: {done} / {total_fixed}**")
+    st.sidebar.progress(min(done / total_fixed, 1.0))
+    
     if st.sidebar.button("📖 Review Instructions"):
         st.session_state.agreed = False
         st.rerun()
@@ -172,6 +177,9 @@ else:
         user_input = st.text_input("Enter your name:", value=st.session_state.user_name)
         st.session_state.user_name = user_input
 
+        # --- PROTECT OPTIONS FROM TRANSLATION ---
+        st.markdown('<div translate="no">', unsafe_allow_html=True)
+        
         col1, col2, col3 = st.columns(3)
         with col1:
             cat = st.radio("Step 1: Category?", [current_row['Category'], current_row['Category_2'], current_row['Category_3']], key="cat")
@@ -179,17 +187,19 @@ else:
             sub = st.radio("Step 2: Subcategory?", [current_row['Subcategory'], current_row['Subcategory_2'], current_row['Subcategory_3']], key="sub")
         with col3:
             dis = st.radio("Step 3: Disorder?", [current_row['SpecificDisorder'], current_row['SpecificDisorder_2'], current_row['SpecificDisorder_3']], key="dis")
+        
+        st.markdown('</div>', unsafe_allow_html=True)
 
         if st.button("Submit & Next ➡️", type="primary"):
             if not user_input:
                 st.error("Please enter your name!")
             else:
                 success = False
-                with st.spinner("Saving to Google Sheets..."):
-                    # TRY 5 TIMES TO BEAT THE "API BUSY" ERROR
+                with st.spinner("Saving..."):
                     for attempt in range(5): 
                         try:
                             worksheet = get_worksheet()
+                            # Use the exact values from the variables
                             new_data = [str(current_row['id']), current_row['Title'], current_row['Body'], cat, sub, dis, user_input]
                             worksheet.append_row(new_data)
                             st.session_state.answered_ids.append(str(current_row['id']))
