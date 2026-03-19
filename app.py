@@ -6,7 +6,7 @@ from google.oauth2.service_account import Credentials
 
 # --- CONFIGURATION ---
 BATCH_NUMBER = 1  # <--- CHANGE THIS FOR EACH APP (2, 3, 4, 5)
-CSV_FILE = f'survey_batch_new_{BATCH_NUMBER}.csv'
+CSV_FILE = f'chinese_translated_1.csv'
 SHEET_NAME = f'Survey_Results_Batch_{BATCH_NUMBER}'
 TAB_NAME = 'Result'
 
